@@ -1,1 +1,1 @@
-"# test-directus" 
+# test-directus
