@@ -20,7 +20,7 @@ jobs:
           
           npm install -g socket
 
-          socket login
+          curl https://api.socket.dev/v0/quota -X GET -u ${{ secrets.SOCKET_API }
           
           socket ci '**/package.json' --json >> dependency-report.json
        
