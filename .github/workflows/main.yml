@@ -1,0 +1,61 @@
+name: Socket Security Analysis
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 */6 * * *'  
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Run Custom Socket Analysis
+        env:
+          PACKAGE_NAME: test-directus
+        run: |
+          
+          npm install -g socket
+
+          curl https://api.socket.dev/v0/quota -X GET -u ${{secrets.SOCKET_API}
+          
+          socket ci '**/package.json' --json >> dependency-report.json
+       
+          curl -H "Authorization: Bearer ${{ secrets.SOCKET_API }}" \
+               "https://api.socket.dev/v0/packages/npm/analysis?name=${PACKAGE_NAME}" | \
+          jq -r '.issues[] | select(.severity >= 2)' > high-severity-issues.json
+
+      - name: Process Results
+        run: |
+          if [ -s high-severity-issues.json ]; then
+            echo "High severity issues found"
+            cat high-severity-issues.json
+            exit 1
+          fi
+
+      - name: Create Issue on Detection
+        if: failure()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            try {
+              const issues = JSON.parse(fs.readFileSync('high-severity-issues.json', 'utf8'));
+              if (issues.length > 0) {
+                await github.rest.issues.create({
+                  owner: context.repo.owner,
+                  repo: context.repo.name,
+                  title: '🚨 Socket Security Issues Detected',
+                  body: `Security issues found in dependencies:\n\n${JSON.stringify(issues, null, 2)}`
+                });
+              }
+            } catch (error) {
+              console.error('Error creating issue:', error);
+            }
+
+permissions:
+  contents: read
+  issues: write
