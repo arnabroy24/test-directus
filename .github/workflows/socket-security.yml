@@ -18,7 +18,7 @@ jobs:
           PACKAGE_NAME: test-directus
         run: |
           
-          npm install -g @socket.dev/cli
+          npm install -g socket
           
           echo "${{ secrets.SOCKET_TOKEN }}" | socket auth
           
