@@ -22,7 +22,7 @@ jobs:
           
           echo "${{ secrets.SOCKET_TOKEN }}" | socket auth
           
-          socket report create dependency-report.json
+          socket report create --json dependency-report.json
        
           curl -H "Authorization: Bearer ${{ secrets.SOCKET_TOKEN }}" \
                "https://api.socket.dev/v0/packages/npm/analysis?name=${PACKAGE_NAME}" | \
