@@ -20,7 +20,7 @@ jobs:
           
           npm install -g socket
           
-          echo "${{ secrets.SOCKET_TOKEN }}" | socket auth
+          echo "${{ secrets.SOCKET_TOKEN }}" | socket login
           
           socket ci '**/package.json' --json >> dependency-report.json
        
