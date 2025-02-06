@@ -22,7 +22,7 @@ jobs:
           
           socket ci '**/package.json' --json >> dependency-report.json
        
-          curl -H "Authorization: Bearer ${{ secrets.SOCKET_TOKEN }}" \
+          curl -H "Authorization: Bearer ${{ secrets.SOCKET_API }}" \
                "https://api.socket.dev/v0/packages/npm/analysis?name=${PACKAGE_NAME}" | \
           jq -r '.issues[] | select(.severity >= 2)' > high-severity-issues.json
 
