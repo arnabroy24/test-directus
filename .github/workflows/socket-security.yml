@@ -19,6 +19,8 @@ jobs:
         run: |
           
           npm install -g socket
+
+          socket login
           
           socket ci '**/package.json' --json >> dependency-report.json
        
